@@ -11,12 +11,6 @@ public class PlayerMove : MonoBehaviour
     [Tooltip("移动速度（单位/秒）")]
     [SerializeField] private float moveSpeed = 10f;
 
-    [Header("朝向设置")]
-    [Tooltip("角色贴图中头部所在的初始角度（度）。90=头部朝上（贴图的上边），0=头部朝右，-90=头部朝下")]
-    [SerializeField] private float spriteHeadAngle = 90f;
-    [Tooltip("头部转向运动方向的角速度（度/秒），越大转身越干脆")]
-    [SerializeField] private float rotateSpeed = 720f;
-
     [Header("移动边界")]
     [Tooltip("X 轴最小值（左边界）")]
     [SerializeField] private float minX = -8.5f;
@@ -74,11 +68,9 @@ public class PlayerMove : MonoBehaviour
         Vector3 direction = new Vector3(horizontal, vertical, 0f).normalized;
 
         // 记录朝向，闪现时作为默认方向使用
-        // 头部始终朝向运动方向，静止时保持上一次的朝向
         if (direction != Vector3.zero)
         {
             facingDirection = direction;
-            FaceDirection(direction);
         }
 
         // 乘以 Time.deltaTime 保证移动速度与帧率无关
@@ -86,31 +78,6 @@ public class PlayerMove : MonoBehaviour
 
         // 移动后立刻限制位置，防止角色越界
         ClampPosition();
-    }
-
-    /// <summary>
-    /// 让角色头部转向指定方向（仅绕 Z 轴旋转，保证 2D 平面朝向正确）
-    /// </summary>
-    private void FaceDirection(Vector3 direction)
-    {
-        if (direction == Vector3.zero)
-        {
-            return;
-        }
-
-        // 运动方向在世界坐标下的角度
-        float moveAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // 减去头部初始角度，得到需要旋转到的 Z 轴角度
-        float targetAngle = moveAngle - spriteHeadAngle;
-        Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetAngle);
-
-        // 平滑转向，rotateSpeed 很大时近似瞬间对齐
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            rotateSpeed * Time.deltaTime
-        );
     }
 
     /// <summary>
@@ -159,13 +126,8 @@ public class PlayerMove : MonoBehaviour
     {
         isDashing = true;
 
-        Vector3 dashDirection = direction.normalized;
-
-        // 闪现时头部也朝向闪现方向
-        facingDirection = dashDirection;
-
         Vector3 start = transform.position;
-        Vector3 target = start + dashDirection * dashDistance;
+        Vector3 target = start + direction.normalized * dashDistance;
 
         // 闪现终点同样受边界限制
         target.x = Mathf.Clamp(target.x, minX, maxX);
@@ -177,7 +139,6 @@ public class PlayerMove : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / dashDuration);
             transform.position = Vector3.Lerp(start, target, t);
-            FaceDirection(dashDirection);
             yield return null;
         }
 
