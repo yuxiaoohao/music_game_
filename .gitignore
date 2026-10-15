@@ -1,0 +1,41 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# IDE and editor files
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Crash reports
+sysinfo.txt
+
+# Auto-generated addressables data
+[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# Visual Studio cache and generated files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.opendb
+*.VC.db
+
+# Temporary build artifacts
+*.apk
+*.aab
+*.unitypackage
